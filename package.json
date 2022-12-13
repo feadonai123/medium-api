@@ -1,12 +1,16 @@
 {
-  "name": "medium-api",
+  "name": "medium-integra",
   "version": "1.0.0",
   "description": "",
   "main": "./src/index.js",
   "scripts": {
     "test": "node sample.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/feadonai123/medium-api"
+  },
+  "author": "Felipe Adonai de Moraes",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.2.1",
