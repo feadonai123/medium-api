@@ -1,19 +1,18 @@
 const axios = require('axios');
-const rssToJson = require('rss-to-json');
 const dotenv = require('dotenv')
 dotenv.config()
-
-class RssToJson{
-  static async get(url){
-    let json = await rssToJson.parse(url);
-    return json;
-  }
-}
 
 class RequestHelper {
   static async get(url, config = {}) {
     try {
-      const response = await axios.get(url, config)
+      const headers = {
+        ...config.headers,
+        "Accept-Encoding": '*'
+      }
+      const response = await axios.get(url, {
+        ...config,
+        headers
+      })
       return response.data
     } catch (error) {
       throw new Error(error?.response?.data?.errors?.map(e => e.message).join(' ') || error.message || "Unknown error")
@@ -32,7 +31,7 @@ class RequestHelper {
 
 class Medium{
   static #url = 'https://api.medium.com/v1';
-  static #urlRss = 'https://medium.com/feed';
+  static #urlPublications = 'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed'
   static #config = {
     headers: {
       "Content-type": "application/json",
@@ -53,7 +52,7 @@ class Medium{
 
   static async getPosts(){
     if(!this.userData) await this.getUser()
-    const resGetPost = await RssToJson.get(`${this.#urlRss}/@${this.userData.username}`)
+    const resGetPost = await RequestHelper.get(`${this.#urlPublications}/@${this.userData.username}`)
     this.userPosts = resGetPost.items
     return this.userPosts
   }
@@ -87,6 +86,7 @@ class Medium{
       contentFormat: "html",
       content: html,
       tags,
+      license: "all-rights-reserved",
       publishStatus: "public"
     }, this.#config)
     return resCreatePost;
